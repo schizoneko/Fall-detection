@@ -1,5 +1,6 @@
 ## IDF Component Manager Manifest File
 dependencies:
+  espressif/esp_rainmaker: "^1.5.1"
   espressif/esp-dl: "^3.0.0~1-rc.1"
   espressif/mpu6050: "^1.2.0"
   ## Required IDF version
