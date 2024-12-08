@@ -165,6 +165,13 @@ dependencies:
       registry_url: https://components.espressif.com
       type: service
     version: 1.0.3
+  espressif/qrcode:
+    component_hash: 3b493771bc5d6ad30cbf87c25bf784aada8a08c941504355b55d6b75518ed7bc
+    dependencies: []
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 0.1.0~2
   espressif/rmaker_common:
     component_hash: a3a1df881278d0351fc850b77792fe8a196ddd6dcacbea203d606329cc6a0239
     dependencies: []
@@ -180,7 +187,8 @@ direct_dependencies:
 - espressif/esp-dl
 - espressif/esp_rainmaker
 - espressif/mpu6050
+- espressif/qrcode
 - idf
-manifest_hash: b49124c30c279bbf2176c55369b17a7aa3f068230be72174294050e18b44f9e1
+manifest_hash: 375d4b9696bc0aba1ce5c350badeb98dfc1f102d8c3a927a3dbe1112797cb5c5
 target: esp32s3
 version: 2.0.0
