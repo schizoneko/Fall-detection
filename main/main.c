@@ -179,8 +179,6 @@ void app_main(void)
             // //write to csv file
             // fprintf(fpt, "%d, %f, %f, %f, %f, %f, %f\n", sample_count, acce.acce_x, acce.acce_y, acce.acce_z, gyro.gyro_x, gyro.gyro_y, gyro.gyro_z);
             // fprintf(fpt2, "%d, %f, %f, %f, %f, %f, %f\n", sample_count, acce2.acce_x, acce2.acce_y, acce2.acce_z, gyro2.gyro_x, gyro2.gyro_y, gyro2.gyro_z);
-            
-            sample_count++;
 
             // End the continuous mode after 15s
             if (sample_count >= 15 * (1000 / 100)) // 15 seconds, 100ms per sample
