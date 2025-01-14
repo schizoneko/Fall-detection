@@ -410,8 +410,6 @@ void app_main(void)
              fabs(acce2.acce_y - prev_acce2.acce_y) > ACCE_THRESHOLD ||
              fabs(acce2.acce_z - prev_acce2.acce_z) > ACCE_THRESHOLD) && !continuous_mode) 
         {
-            ret = esp_rmaker_raise_alert("Fall detected");
-            TEST_ASSERT_EQUAL(ESP_OK, ret);
             ESP_LOGI(TAG, "Sudden movement detected! Starting continuous mode.");
             ESP_LOGI(TAG, "Count, Accel X, Accel Y, Accel Z, Gyro X, Gyro Y, Gyro Z");
             continuous_mode = true;
@@ -493,11 +491,13 @@ void app_main(void)
 
                 float output = forward(input);
 
-                if (result == 0.0f) {
-                    ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Not Fall", result);
+                if (output == 0.0f) {
+                    ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Not Fall", output);
                 }
                 else {
-                    ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Fall", result);
+                    ret = esp_rmaker_raise_alert("Fall detected");
+                    TEST_ASSERT_EQUAL(ESP_OK, ret);
+                    ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Fall", output);
                 }
 
                 //ESP_LOGI(TAG_2, "Sensor 2 - Avg Accel: X: %.2f, Y: %.2f, Z: %.2f | Avg Gyro: X: %.2f, Y: %.2f, Z: %.2f",
