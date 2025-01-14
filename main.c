@@ -90,9 +90,6 @@ void app_main(void)
     mpu6050_gyro_value_t gyro2, prev_gyro2;
     mpu6050_temp_value_t temp2;
 
-    FILE *fpt;
-    FILE *fpt2;
-    
     bool continuous_mode = false;
     int sample_count = 0;
 
@@ -181,7 +178,7 @@ void app_main(void)
             // fprintf(fpt2, "%d, %f, %f, %f, %f, %f, %f\n", sample_count, acce2.acce_x, acce2.acce_y, acce2.acce_z, gyro2.gyro_x, gyro2.gyro_y, gyro2.gyro_z);
 
             // End the continuous mode after 15s
-            if (sample_count >= 15 * (1000 / 100)) // 15 seconds, 100ms per sample
+            if (sample_count >= 15 * (1000 / 100)) // 7.5 seconds, 100ms per sample
             {
                 ESP_LOGI(TAG, "Continuous mode complete. Calculating averages...");
 
