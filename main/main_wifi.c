@@ -491,7 +491,7 @@ void app_main(void)
 
                 float output = forward(input);
 
-                if (output == 0.0f) {
+                if (output < 0.5f) {
                     ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Not Fall", output);
                 }
                 else {
@@ -500,8 +500,8 @@ void app_main(void)
                     ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Fall", output);
                 }
 
-                //ESP_LOGI(TAG_2, "Sensor 2 - Avg Accel: X: %.2f, Y: %.2f, Z: %.2f | Avg Gyro: X: %.2f, Y: %.2f, Z: %.2f",
-                //         avg2_acce.acce_x, avg2_acce.acce_y, avg2_acce.acce_z, avg2_gyro.gyro_x, avg2_gyro.gyro_y, avg2_gyro.gyro_z);
+                ESP_LOGI(TAG_2, "Sensor 2 - Avg Accel: X: %.2f, Y: %.2f, Z: %.2f | Avg Gyro: X: %.2f, Y: %.2f, Z: %.2f",
+                         avg2_acce.acce_x, avg2_acce.acce_y, avg2_acce.acce_z, avg2_gyro.gyro_x, avg2_gyro.gyro_y, avg2_gyro.gyro_z);
                 ret = esp_rmaker_param_update_and_report(acce1_x, esp_rmaker_float(avg_acce.acce_x));
                 TEST_ASSERT_EQUAL(ESP_OK, ret);
                 ret = esp_rmaker_param_update_and_report(acce1_y, esp_rmaker_float(avg_acce.acce_y));
