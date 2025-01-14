@@ -5,6 +5,8 @@
 #include <esp_event.h>
 #include <string.h>
 
+#include "forward.h"
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/event_groups.h>
@@ -480,8 +482,26 @@ void app_main(void)
                 ESP_LOGI(TAG, "Sensor 1 - Avg Accel: X: %.2f, Y: %.2f, Z: %.2f | Avg Gyro: X: %.2f, Y: %.2f, Z: %.2f",
                          avg_acce.acce_x, avg_acce.acce_y, avg_acce.acce_z, avg_gyro.gyro_x, avg_gyro.gyro_y, avg_gyro.gyro_z);
 
-                ESP_LOGI(TAG_2, "Sensor 2 - Avg Accel: X: %.2f, Y: %.2f, Z: %.2f | Avg Gyro: X: %.2f, Y: %.2f, Z: %.2f",
-                         avg2_acce.acce_x, avg2_acce.acce_y, avg2_acce.acce_z, avg2_gyro.gyro_x, avg2_gyro.gyro_y, avg2_gyro.gyro_z);
+                float input[INPUT_LAYER_SIZE] = {
+                    avg_acce.acce_x, 
+                    avg_acce.acce_y, 
+                    avg_acce.acce_z, 
+                    avg_gyro.gyro_x, 
+                    avg_gyro.gyro_y, 
+                    avg_gyro.gyro_z
+                };
+
+                float output = forward(input);
+
+                if (result == 0.0f) {
+                    ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Not Fall", result);
+                }
+                else {
+                    ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Fall", result);
+                }
+
+                //ESP_LOGI(TAG_2, "Sensor 2 - Avg Accel: X: %.2f, Y: %.2f, Z: %.2f | Avg Gyro: X: %.2f, Y: %.2f, Z: %.2f",
+                //         avg2_acce.acce_x, avg2_acce.acce_y, avg2_acce.acce_z, avg2_gyro.gyro_x, avg2_gyro.gyro_y, avg2_gyro.gyro_z);
                 ret = esp_rmaker_param_update_and_report(acce1_x, esp_rmaker_float(avg_acce.acce_x));
                 TEST_ASSERT_EQUAL(ESP_OK, ret);
                 ret = esp_rmaker_param_update_and_report(acce1_y, esp_rmaker_float(avg_acce.acce_y));
