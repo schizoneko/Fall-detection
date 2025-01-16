@@ -493,7 +493,7 @@ void app_main(void)
 
                 float output = forward(input);
 
-                if (output == 0.0f) {
+                if (output < 0.5f) {
                     ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Not Fall", output);
                 }
                 else {

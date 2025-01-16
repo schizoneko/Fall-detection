@@ -1,2 +1,5 @@
 idf_component_register(SRCS "main_wifi.c"
-                    INCLUDE_DIRS "../include")
+                       "../include/activation_func.c"
+                       "../include/parameters.c"
+                       "../include/forward.c"
+                       INCLUDE_DIRS "../include")
