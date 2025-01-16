@@ -29,10 +29,8 @@
 #define ACCE_THRESHOLD 1.0 
 
 static const char *TAG = "mpu6050 test";
-static const char *TAG_2 = "mpu6050 test 2";
 static const char *TAG_3 = "wifi_ap";
 static mpu6050_handle_t mpu6050 = NULL;
-static mpu6050_handle_t mpu6050_2 = NULL;
 
 
 /**
@@ -70,20 +68,6 @@ static void i2c_sensor_mpu6050_init(void)
     TEST_ASSERT_EQUAL(ESP_OK, ret);
 
     ret = mpu6050_wake_up(mpu6050);
-    TEST_ASSERT_EQUAL(ESP_OK, ret);
-}
-
-static void i2c_sensor_mpu6050_init_2(void)
-{
-    esp_err_t ret;
-
-    mpu6050_2 = mpu6050_create(I2C_NUM_0, MPU6050_I2C_ADDRESS_1);
-    TEST_ASSERT_NOT_NULL_MESSAGE(mpu6050_2, "MPU6050 create returned NULL");
-
-    ret = mpu6050_config(mpu6050_2, ACCE_FS_4G, GYRO_FS_500DPS);
-    TEST_ASSERT_EQUAL(ESP_OK, ret);
-
-    ret = mpu6050_wake_up(mpu6050_2);
     TEST_ASSERT_EQUAL(ESP_OK, ret);
 }
 
@@ -232,16 +216,10 @@ void app_main(void)
 
     esp_rmaker_param_t *acce1_x, *acce1_y, *acce1_z;
     esp_rmaker_param_t *gyro1_x, *gyro1_y, *gyro1_z;
-    esp_rmaker_param_t *acce2_x, *acce2_y, *acce2_z;
-    esp_rmaker_param_t *gyro2_x, *gyro2_y, *gyro2_z;
 
     mpu6050_acce_value_t acce, prev_acce = {0, 0, 0}, avg_acce;
     mpu6050_gyro_value_t gyro, prev_gyro, avg_gyro;
     mpu6050_temp_value_t temp;
-
-    mpu6050_acce_value_t acce2, prev_acce2 = {0, 0, 0}, avg2_acce;
-    mpu6050_gyro_value_t gyro2, prev_gyro2, avg2_gyro;
-    mpu6050_temp_value_t temp2;
 
     bool continuous_mode = false;
     int sample_count = 0;
@@ -250,14 +228,11 @@ void app_main(void)
     float total_acce_x1 = 0, total_acce_y1 = 0, total_acce_z1 = 0;
     float gyro_x1 = 0, gyro_y1 = 0, gyro_z1 = 0;
 
-    // Sum 2
-    float total_acce_x2 = 0, total_acce_y2 = 0, total_acce_z2 = 0;
-    float gyro_x2 = 0, gyro_y2 = 0, gyro_z2 = 0;
-
     i2c_bus_init();
     i2c_sensor_mpu6050_init();
-    i2c_sensor_mpu6050_init_2();
 
+    // ret = nvs_flash_erase();
+    // TEST_ASSERT_EQUAL(ESP_OK, ret);
     ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         /* NVS partition was truncated
@@ -293,53 +268,30 @@ void app_main(void)
     esp_rmaker_node_t *node = esp_rmaker_node_init(&rainmaker_cfg, "Body", "ESP32S3");
 
     esp_rmaker_device_t *MPU_1 = esp_rmaker_device_create("MPU Device 1", NULL, NULL);
-    esp_rmaker_device_t *MPU_2 = esp_rmaker_device_create("MPU Device 2", NULL, NULL);
 
     ret = esp_rmaker_node_add_device(node, MPU_1);
-    TEST_ASSERT_EQUAL(ESP_OK, ret);
-    ret = esp_rmaker_node_add_device(node, MPU_2);
     TEST_ASSERT_EQUAL(ESP_OK, ret);
     
     acce1_x = esp_rmaker_param_create("Accel X", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
     acce1_y = esp_rmaker_param_create("Accel Y", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
     acce1_z = esp_rmaker_param_create("Accel Z", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
 
-    acce2_x = esp_rmaker_param_create("Accel X", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
-    acce2_y = esp_rmaker_param_create("Accel Y", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
-    acce2_z = esp_rmaker_param_create("Accel Z", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
-    
     ret = esp_rmaker_device_add_param(MPU_1, acce1_x);
     TEST_ASSERT_EQUAL(ESP_OK, ret);
     ret = esp_rmaker_device_add_param(MPU_1, acce1_y);
     TEST_ASSERT_EQUAL(ESP_OK, ret);
     ret = esp_rmaker_device_add_param(MPU_1, acce1_z);
     TEST_ASSERT_EQUAL(ESP_OK, ret);
-    ret = esp_rmaker_device_add_param(MPU_2, acce2_x);
-    TEST_ASSERT_EQUAL(ESP_OK, ret);
-    ret = esp_rmaker_device_add_param(MPU_2, acce2_y);
-    TEST_ASSERT_EQUAL(ESP_OK, ret);
-    ret = esp_rmaker_device_add_param(MPU_2, acce2_z);
-    TEST_ASSERT_EQUAL(ESP_OK, ret);
 
     gyro1_x = esp_rmaker_param_create("Gyro X", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
     gyro1_y = esp_rmaker_param_create("Gyro Y", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
     gyro1_z = esp_rmaker_param_create("Gyro Z", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
-
-    gyro2_x = esp_rmaker_param_create("Gyro X", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
-    gyro2_y = esp_rmaker_param_create("Gyro Y", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
-    gyro2_z = esp_rmaker_param_create("Gyro Z", NULL, esp_rmaker_float(0.0), PROP_FLAG_READ);
     
     ret = esp_rmaker_device_add_param(MPU_1, gyro1_x);
     TEST_ASSERT_EQUAL(ESP_OK, ret);
     ret = esp_rmaker_device_add_param(MPU_1, gyro1_y);
     TEST_ASSERT_EQUAL(ESP_OK, ret);
     ret = esp_rmaker_device_add_param(MPU_1, gyro1_z);
-    TEST_ASSERT_EQUAL(ESP_OK, ret);
-    ret = esp_rmaker_device_add_param(MPU_2, gyro2_x);
-    TEST_ASSERT_EQUAL(ESP_OK, ret);
-    ret = esp_rmaker_device_add_param(MPU_2, gyro2_y);
-    TEST_ASSERT_EQUAL(ESP_OK, ret);
-    ret = esp_rmaker_device_add_param(MPU_2, gyro2_z);
     TEST_ASSERT_EQUAL(ESP_OK, ret);
 
     esp_rmaker_start();
@@ -396,22 +348,12 @@ void app_main(void)
         ret = mpu6050_get_gyro(mpu6050, &gyro);
         TEST_ASSERT_EQUAL(ESP_OK, ret);
 
-        // Reading stats from Sensor 2
-        ret = mpu6050_get_acce(mpu6050_2, &acce2);
-        TEST_ASSERT_EQUAL(ESP_OK, ret);
-        ret = mpu6050_get_gyro(mpu6050_2, &gyro2);
-        TEST_ASSERT_EQUAL(ESP_OK, ret);
-
         // Checking the threshold
         if ((fabs(acce.acce_x - prev_acce.acce_x) > ACCE_THRESHOLD ||
              fabs(acce.acce_y - prev_acce.acce_y) > ACCE_THRESHOLD ||
-             fabs(acce.acce_z - prev_acce.acce_z) > ACCE_THRESHOLD ||
-             fabs(acce2.acce_x - prev_acce2.acce_x) > ACCE_THRESHOLD ||
-             fabs(acce2.acce_y - prev_acce2.acce_y) > ACCE_THRESHOLD ||
-             fabs(acce2.acce_z - prev_acce2.acce_z) > ACCE_THRESHOLD) && !continuous_mode) 
+             fabs(acce.acce_z - prev_acce.acce_z) > ACCE_THRESHOLD
+            ) && !continuous_mode) 
         {
-            ret = esp_rmaker_raise_alert("Fall detected");
-            TEST_ASSERT_EQUAL(ESP_OK, ret);
             ESP_LOGI(TAG, "Sudden movement detected! Starting continuous mode.");
             ESP_LOGI(TAG, "Count, Accel X, Accel Y, Accel Z, Gyro X, Gyro Y, Gyro Z");
             continuous_mode = true;
@@ -420,8 +362,6 @@ void app_main(void)
             // Reset the sum
             total_acce_x1 = total_acce_y1 = total_acce_z1 = 0;
             gyro_x1 = gyro_y1 = gyro_z1 = 0;
-            total_acce_x2 = total_acce_y2 = total_acce_z2 = 0;
-            gyro_x2 = gyro_y2 = gyro_z2 = 0;
         }
 
         // Continous mode
@@ -437,19 +377,8 @@ void app_main(void)
             gyro_y1 += gyro.gyro_y;
             gyro_z1 += gyro.gyro_z;
 
-            // Sum of the stats of sensor 2
-            total_acce_x2 += acce2.acce_x;
-            total_acce_y2 += acce2.acce_y;
-            total_acce_z2 += acce2.acce_z;
-
-            gyro_x2 += gyro2.gyro_x;
-            gyro_y2 += gyro2.gyro_y;
-            gyro_z2 += gyro2.gyro_z;
-
             sample_count++;
             ESP_LOGI(TAG, "%d, %0.2f, %0.2f, %0.2f, %0.2f, %0.2f, %0.2f", sample_count, acce.acce_x, acce.acce_y, acce.acce_z, gyro.gyro_x, gyro.gyro_y, gyro.gyro_z);
-            sample_count++;
-            ESP_LOGI(TAG, "%d, %0.2f, %0.2f, %0.2f, %0.2f, %0.2f, %0.2f", sample_count, acce2.acce_x, acce2.acce_y, acce2.acce_z, gyro2.gyro_x, gyro2.gyro_y, gyro2.gyro_z);
 
             
             // //write to csv file
@@ -457,7 +386,7 @@ void app_main(void)
             // fprintf(fpt2, "%d, %f, %f, %f, %f, %f, %f\n", sample_count, acce2.acce_x, acce2.acce_y, acce2.acce_z, gyro2.gyro_x, gyro2.gyro_y, gyro2.gyro_z);
 
             // End the continuous mode after 15s
-            if (sample_count >= 15 * (1000 / 100)) // 7.5 seconds, 100ms per sample
+            if (sample_count >= (int)(7.5 * (1000 / 100))) // 7.5 seconds, 100ms per sample
             {
                 ESP_LOGI(TAG, "Continuous mode complete. Calculating averages...");
 
@@ -469,15 +398,6 @@ void app_main(void)
                 avg_gyro.gyro_x = gyro_x1 / sample_count;
                 avg_gyro.gyro_y = gyro_y1 / sample_count;
                 avg_gyro.gyro_z = gyro_z1 / sample_count;
-
-                // Average stats for sensor 2
-                avg2_acce.acce_x = total_acce_x2 / sample_count;
-                avg2_acce.acce_y = total_acce_y2 / sample_count;
-                avg2_acce.acce_z = total_acce_z2 / sample_count;
-
-                avg2_gyro.gyro_x = gyro_x2 / sample_count;
-                avg2_gyro.gyro_y = gyro_y2 / sample_count;
-                avg2_gyro.gyro_z = gyro_z2 / sample_count;
 
                 ESP_LOGI(TAG, "Sensor 1 - Avg Accel: X: %.2f, Y: %.2f, Z: %.2f | Avg Gyro: X: %.2f, Y: %.2f, Z: %.2f",
                          avg_acce.acce_x, avg_acce.acce_y, avg_acce.acce_z, avg_gyro.gyro_x, avg_gyro.gyro_y, avg_gyro.gyro_z);
@@ -493,15 +413,19 @@ void app_main(void)
 
                 float output = forward(input);
 
+<<<<<<< HEAD
                 if (output < 0.5f) {
+=======
+                if (output < 0.5) {
+>>>>>>> 772df6bd6e2665de6e4645aae0e0858849045bef
                     ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Not Fall", output);
                 }
                 else {
+                    ret = esp_rmaker_raise_alert("Fall detected");
+                    TEST_ASSERT_EQUAL(ESP_OK, ret);
                     ESP_LOGI(TAG, "Neural Network Output: %.6f - Result: Fall", output);
                 }
 
-                ESP_LOGI(TAG_2, "Sensor 2 - Avg Accel: X: %.2f, Y: %.2f, Z: %.2f | Avg Gyro: X: %.2f, Y: %.2f, Z: %.2f",
-                         avg2_acce.acce_x, avg2_acce.acce_y, avg2_acce.acce_z, avg2_gyro.gyro_x, avg2_gyro.gyro_y, avg2_gyro.gyro_z);
                 ret = esp_rmaker_param_update_and_report(acce1_x, esp_rmaker_float(avg_acce.acce_x));
                 TEST_ASSERT_EQUAL(ESP_OK, ret);
                 ret = esp_rmaker_param_update_and_report(acce1_y, esp_rmaker_float(avg_acce.acce_y));
@@ -514,18 +438,6 @@ void app_main(void)
                 TEST_ASSERT_EQUAL(ESP_OK, ret);
                 ret = esp_rmaker_param_update_and_report(gyro1_z, esp_rmaker_float(avg_gyro.gyro_z));
                 TEST_ASSERT_EQUAL(ESP_OK, ret);
-                ret = esp_rmaker_param_update_and_report(acce2_x, esp_rmaker_float(avg2_acce.acce_x));
-                TEST_ASSERT_EQUAL(ESP_OK, ret);
-                ret = esp_rmaker_param_update_and_report(acce2_y, esp_rmaker_float(avg2_acce.acce_y));
-                TEST_ASSERT_EQUAL(ESP_OK, ret);
-                ret = esp_rmaker_param_update_and_report(acce2_z, esp_rmaker_float(avg2_acce.acce_z));
-                TEST_ASSERT_EQUAL(ESP_OK, ret);
-                ret = esp_rmaker_param_update_and_report(gyro2_x, esp_rmaker_float(avg2_gyro.gyro_x));
-                TEST_ASSERT_EQUAL(ESP_OK, ret);
-                ret = esp_rmaker_param_update_and_report(gyro2_y, esp_rmaker_float(avg2_gyro.gyro_y));
-                TEST_ASSERT_EQUAL(ESP_OK, ret);
-                ret = esp_rmaker_param_update_and_report(gyro2_z, esp_rmaker_float(avg2_gyro.gyro_z));
-                TEST_ASSERT_EQUAL(ESP_OK, ret);
                 continuous_mode = false; 
             }
         }
@@ -533,8 +445,6 @@ void app_main(void)
         // Update previous values
         prev_acce = acce;
         prev_gyro = gyro;
-        prev_acce2 = acce2;
-        prev_gyro2 = gyro2;
 
         vTaskDelay(pdMS_TO_TICKS(100)); // Delay 100ms
     }

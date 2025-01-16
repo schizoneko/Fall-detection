@@ -115,4 +115,8 @@ float weights_output[NUM_NEURONS_LAYER2][OUTPUT_LAYER_SIZE] = {
     {-0.592075527}
 };
 
+<<<<<<< HEAD
 float bias_output[OUTPUT_LAYER_SIZE] = {-0.129758656024933};
+=======
+float bias_output[OUTPUT_LAYER_SIZE] = {-0.129758656024933}; 
+>>>>>>> 772df6bd6e2665de6e4645aae0e0858849045bef
