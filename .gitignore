@@ -1,5 +1,8 @@
+.vscode/
 build/
 sdkconfig
 sdkconfig.old
 main(old).c
 FCFS.ipynb
+
+
