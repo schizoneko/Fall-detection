@@ -1,4 +1,4 @@
-# Human Activity Recognition and Fall Detection Using MPU6050
+# Fall Detection Using MPU6050 and a Artificial Neural Network
 
 This project implements a fall detection system using the MPU6050 sensor, neural networks, and an ESP32-based microcontroller. The system processes sensor data to classify human activities and detect falls with medium accuracy, making it useful in healthcare, sports, and safety applications.
 
