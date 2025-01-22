@@ -4,5 +4,11 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.5)
 
+# Include additional component directories
+set(EXTRA_COMPONENT_DIRS src/main src/AI-utils)
+
+# Include the ESP-IDF CMake project functions
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+
+# Declare the project name
 project(project-name)

@@ -132,7 +132,7 @@ dependencies:
       type: service
     version: 1.0.3
   espressif/mdns:
-    component_hash: d36b265164be5139f92de993f08f5ecaa0de0c0acbf84deee1f10bb5902d04ff
+    component_hash: 3d16bbbb5531a04cdc2ec5cc9a961e0e7380710ed4128ce87496daf0d73dda89
     dependencies:
     - name: idf
       require: private
@@ -140,7 +140,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com
       type: service
-    version: 1.4.3
+    version: 1.5.0
   espressif/mpu6050:
     component_hash: d69219ccb141372b863c511749ffbeab28417ac71c205d7ed7030c308e1b6832
     dependencies:
@@ -178,7 +178,7 @@ dependencies:
   idf:
     source:
       type: idf
-    version: 5.3.1
+    version: 5.3.2
 direct_dependencies:
 - espressif/esp-dl
 - espressif/esp_rainmaker
@@ -186,5 +186,5 @@ direct_dependencies:
 - espressif/qrcode
 - idf
 manifest_hash: 375d4b9696bc0aba1ce5c350badeb98dfc1f102d8c3a927a3dbe1112797cb5c5
-target: esp32s3
+target: esp32
 version: 2.0.0

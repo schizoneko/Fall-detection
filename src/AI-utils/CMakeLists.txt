@@ -5,6 +5,6 @@ set(app_src
 )
 
 idf_component_register(
-    SRCS ${app_src}          # Sử dụng biến `app_src` ở đây
-    INCLUDE_DIRS "include"   # Thư mục chứa các tệp header
+    SRCS ${app_src}
+    INCLUDE_DIRS "include"    
 )
